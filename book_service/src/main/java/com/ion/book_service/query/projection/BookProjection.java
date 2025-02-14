@@ -32,11 +32,15 @@ public class BookProjection {
     }
 
     @QueryHandler
-    public BookResponseModel handle(GetBookDetailQuery query) {
-        BookResponseModel bookResponseModel = new BookResponseModel();
-        bookRepository.findById(query.getId()).ifPresent(book -> {
+    public BookResponseModel handle(GetBookDetailQuery query) throws Exception {
+        {
+            BookResponseModel bookResponseModel = new BookResponseModel();
+            Book book = bookRepository.findById(query.getId()).orElseThrow(() -> new Exception(
+                    "Book not found with BookId: " + query.getId()
+            ));
             BeanUtils.copyProperties(book, bookResponseModel);
-        });
-        return bookResponseModel;
+
+            return bookResponseModel;
+        }
     }
 }
