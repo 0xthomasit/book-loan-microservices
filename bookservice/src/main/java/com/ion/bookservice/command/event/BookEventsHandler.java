@@ -7,6 +7,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class BookEventsHandler {
 
@@ -20,4 +22,23 @@ public class BookEventsHandler {
         bookRepository.save(book);
     }
 
+    @EventHandler
+    public void on(BookUpdatedEvent event) {
+        Optional<Book> oldBook = bookRepository.findById(event.getId());
+        if (oldBook.isPresent()) {
+            Book book = oldBook.get();
+            book.setName(event.getName());
+            book.setAuthor(event.getAuthor());
+            book.setIsReady(event.getIsReady());
+            bookRepository.save(book);
+        }
+    }
+
+    @EventHandler
+    public void on(BookDeletedEvent event) {
+        Optional<Book> oldBook = bookRepository.findById(event.getId());
+        if (oldBook.isPresent()) {
+            bookRepository.delete(oldBook.get());
+        }
+    }
 }

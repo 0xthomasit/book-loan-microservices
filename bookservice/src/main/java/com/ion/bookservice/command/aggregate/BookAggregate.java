@@ -1,7 +1,11 @@
 package com.ion.bookservice.command.aggregate;
 
 import com.ion.bookservice.command.command.CreateBookCommand;
+import com.ion.bookservice.command.command.DeleteBookCommand;
+import com.ion.bookservice.command.command.UpdateBookCommand;
 import com.ion.bookservice.command.event.BookCreatedEvent;
+import com.ion.bookservice.command.event.BookDeletedEvent;
+import com.ion.bookservice.command.event.BookUpdatedEvent;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,6 +34,20 @@ public class BookAggregate {
         BeanUtils.copyProperties(command, bookCreatedEvent);
 
         AggregateLifecycle.apply(bookCreatedEvent);
+    }
+
+    @CommandHandler
+    public void handle(UpdateBookCommand command) {
+        BookUpdatedEvent bookUpdatedEvent = new BookUpdatedEvent();
+        BeanUtils.copyProperties(command, bookUpdatedEvent);
+        AggregateLifecycle.apply(bookUpdatedEvent);
+    }
+
+    @CommandHandler
+    public void handle(DeleteBookCommand command) {
+        BookDeletedEvent bookDeletedEvent = new BookDeletedEvent();
+        BeanUtils.copyProperties(command, bookDeletedEvent);
+        AggregateLifecycle.apply(bookDeletedEvent);
     }
 
     @EventSourcingHandler
