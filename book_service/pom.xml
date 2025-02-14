@@ -71,6 +71,12 @@
 			<artifactId>guava</artifactId>
 			<version>33.4.0-jre</version>
 		</dependency>
+		<!-- Shared common_service library -->
+		<dependency>
+			<groupId>com.ion</groupId>
+			<artifactId>common_service</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
 	</dependencies>
 	<dependencyManagement>
@@ -108,7 +114,6 @@
 						<exclude>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-							<version>${lombok.version}</version>
 						</exclude>
 					</excludes>
 				</configuration>
