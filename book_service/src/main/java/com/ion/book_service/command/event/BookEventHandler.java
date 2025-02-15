@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class BookEventsHandler {
+public class BookEventHandler {
 
     @Autowired
     private BookRepository bookRepository;
