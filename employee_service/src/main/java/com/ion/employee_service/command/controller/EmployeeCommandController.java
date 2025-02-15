@@ -1,14 +1,13 @@
 package com.ion.employee_service.command.controller;
 
 import com.ion.employee_service.command.command.CreateEmployeeCommand;
+import com.ion.employee_service.command.command.UpdateEmployeeCommand;
 import com.ion.employee_service.command.model.CreateEmployeeModel;
+import com.ion.employee_service.command.model.UpdateEmployeeModel;
 import jakarta.validation.Valid;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -26,6 +25,13 @@ public class EmployeeCommandController {
                 model.getLastName(),
                 model.getKin(),
                 false);
+        return commandGateway.sendAndWait(command);
+    }
+
+    @PutMapping("/{employeeId}")
+    public String updateEmployee(@Valid @RequestBody UpdateEmployeeModel model, @PathVariable String employeeId) {
+        UpdateEmployeeCommand command = new UpdateEmployeeCommand(
+                employeeId, model.getFirstName(), model.getLastName(), model.getKin(), model.getIsDisciplined());
         return commandGateway.sendAndWait(command);
     }
 }
