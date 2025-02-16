@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.ion</groupId>
-	<artifactId>discoveryserver</artifactId>
+	<artifactId>discovery_server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>discoveryserver</name>
+	<name>discovery_server</name>
 	<description>A service for Discovery Server</description>
 	<url/>
 	<licenses>
@@ -38,6 +38,12 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>

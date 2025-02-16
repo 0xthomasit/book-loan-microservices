@@ -11,6 +11,8 @@ public class EmployeeCreatedEvent {
     private String id;
     private String firstName;
     private String lastName;
+    private String LastName;
     private String kin;
+    private String Kin;
     private Boolean isDisciplined;
 }

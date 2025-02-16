@@ -1,4 +1,4 @@
-package com.ion.discoveryserver;
+package com.ion.discovery_server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
