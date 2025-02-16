@@ -1,6 +1,7 @@
 package com.ion.employee_service.command.controller;
 
 import com.ion.employee_service.command.command.CreateEmployeeCommand;
+import com.ion.employee_service.command.command.DeleteEmployeeCommand;
 import com.ion.employee_service.command.command.UpdateEmployeeCommand;
 import com.ion.employee_service.command.model.CreateEmployeeModel;
 import com.ion.employee_service.command.model.UpdateEmployeeModel;
@@ -32,6 +33,12 @@ public class EmployeeCommandController {
     public String updateEmployee(@Valid @RequestBody UpdateEmployeeModel model, @PathVariable String employeeId) {
         UpdateEmployeeCommand command = new UpdateEmployeeCommand(
                 employeeId, model.getFirstName(), model.getLastName(), model.getKin(), model.getIsDisciplined());
+        return commandGateway.sendAndWait(command);
+    }
+
+    @DeleteMapping("/{employeeId}")
+    public String deleteEmployee(@PathVariable String employeeId) {
+        DeleteEmployeeCommand command = new DeleteEmployeeCommand(employeeId);
         return commandGateway.sendAndWait(command);
     }
 }

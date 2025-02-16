@@ -1,8 +1,10 @@
 package com.ion.employee_service.command.aggregate;
 
 import com.ion.employee_service.command.command.CreateEmployeeCommand;
+import com.ion.employee_service.command.command.DeleteEmployeeCommand;
 import com.ion.employee_service.command.command.UpdateEmployeeCommand;
 import com.ion.employee_service.command.event.EmployeeCreatedEvent;
+import com.ion.employee_service.command.event.EmployeeDeletedEvent;
 import com.ion.employee_service.command.event.EmployeeUpdatedEvent;
 import lombok.NoArgsConstructor;
 import org.axonframework.commandhandling.CommandHandler;
@@ -36,6 +38,13 @@ public class EmployeeAggregate {
         AggregateLifecycle.apply(event);
     }
 
+    @CommandHandler
+    public void handle(DeleteEmployeeCommand command) {
+        EmployeeDeletedEvent event = new EmployeeDeletedEvent();
+        BeanUtils.copyProperties(command, event);
+        AggregateLifecycle.apply(event);
+    }
+
     @EventSourcingHandler
     public void on(EmployeeCreatedEvent event) {
         this.id = event.getId();
@@ -52,5 +61,10 @@ public class EmployeeAggregate {
         this.lastName = event.getLastName();
         this.kin = event.getKin();
         this.isDisciplined = event.getIsDisciplined();
+    }
+
+    @EventSourcingHandler
+    public void on(EmployeeDeletedEvent event) {
+        this.id = event.getId();
     }
 }
