@@ -16,14 +16,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/employees")
-@Tag(name = "Employee-query service")
+@Tag(name = "Employee service for Query")
 public class EmployeeQueryController {
     @Autowired
     private QueryGateway queryGateway;
 
     @Operation(
-            summary = "Get List Employee",
-            description = "Get endpoint for employee with filter",
+            summary = "Get a list of Employees",
+            description = "Get endpoint for a list of employees with filter",
             responses = {
                     @ApiResponse(
                             description = "Success",
@@ -41,6 +41,20 @@ public class EmployeeQueryController {
                 .query(new GetAllEmployeeQuery(isDisciplined), ResponseTypes.multipleInstancesOf(EmployeeResponseModel.class)).join();
     }
 
+    @Operation(
+            summary = "Get an Employee's detail",
+            description = "Get endpoint for detail about employee information",
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200"
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized / Invalid Token"
+                    )
+            }
+    )
     @GetMapping("/{employeeId}")
     public EmployeeResponseModel getDetailEmployee(@PathVariable String employeeId) {
         return queryGateway.query(new GetDetailEmployeeQuery(employeeId), ResponseTypes.instanceOf(EmployeeResponseModel.class)).join();

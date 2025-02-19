@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
                 version = "1.0",
                 contact = @Contact(
                         name = "Thomas Ng",
-                        email = "tuanit@outlook.com",
+                        email = "tuan.ngo.se@gmail.com",
                         url = "https://ion.vercel.app"
                 ),
                 license = @License(

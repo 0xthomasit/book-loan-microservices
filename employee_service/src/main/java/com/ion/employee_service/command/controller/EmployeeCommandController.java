@@ -5,6 +5,8 @@ import com.ion.employee_service.command.command.DeleteEmployeeCommand;
 import com.ion.employee_service.command.command.UpdateEmployeeCommand;
 import com.ion.employee_service.command.model.CreateEmployeeModel;
 import com.ion.employee_service.command.model.UpdateEmployeeModel;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/employees")
+@Tag(name = "Employee service for Command")
 public class EmployeeCommandController {
     @Autowired
     private CommandGateway commandGateway;
@@ -37,6 +40,7 @@ public class EmployeeCommandController {
     }
 
     @DeleteMapping("/{employeeId}")
+    @Hidden
     public String deleteEmployee(@PathVariable String employeeId) {
         DeleteEmployeeCommand command = new DeleteEmployeeCommand(employeeId);
         return commandGateway.sendAndWait(command);
