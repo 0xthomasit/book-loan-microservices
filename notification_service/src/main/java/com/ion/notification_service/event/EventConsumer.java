@@ -21,6 +21,7 @@ public class EventConsumer {
             dltStrategy = DltStrategy.FAIL_ON_ERROR,
             include = {RetriableException.class, RuntimeException.class}
     )
+
     @KafkaListener(topics = "test", containerFactory = "kafkaListenerContainerFactory")
     public void listen(String message) {
         log.info("Received message: " + message);
@@ -30,7 +31,8 @@ public class EventConsumer {
     }
 
     @DltHandler
-    void processDltMessage(@Payload String messsage) {
-        log.info("DLT receive message: " + messsage);
+    void processDltMessage(@Payload String message) {
+        log.info("DLT receive message: " + message);
     }
+
 }
