@@ -12,6 +12,9 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Component
 @Slf4j
 public class EventConsumer {
@@ -29,7 +32,7 @@ public class EventConsumer {
 
     @KafkaListener(topics = "test", containerFactory = "kafkaListenerContainerFactory")
     public void listen(String message) {
-        log.info("[test topic]Received message: {}", message);
+        log.info("[test] Received message: {}", message);
         // processing message
 
         throw new RuntimeException("Error test");
@@ -42,7 +45,7 @@ public class EventConsumer {
 
     @KafkaListener(topics = "testEmail", containerFactory = "kafkaListenerContainerFactory")
     public void testEmail(String message) {
-        log.info("[testEmail topic]Received message: {}", message);
+        log.info("[testEmail] Received message: {}", message);
 
         String template = "<div>\n" +
                 "    <h1>Welcome, %s!</h1>\n" +
@@ -53,11 +56,26 @@ public class EventConsumer {
 
         emailService.sendEmail(
                 message,
-                "Thanks for buying my course",
+                "Thanks for joining our organization",
                 filledTemplate,
                 true,
                 null
         );
     }
 
+    @KafkaListener(topics = "emailTemplate", containerFactory = "kafkaListenerContainerFactory")
+    public void emailTemplate(String message) {
+        log.info("[emailTemplate] Received message: {}", message);
+
+        Map<String, Object> placeholders = new HashMap<>();
+        placeholders.put("name", "ION Mobility");
+
+        emailService.sendEmailWithTemplate(
+                message,
+                "Welcome to Christmas",
+                "emailTemplate.ftl",
+                placeholders,
+                null
+        );
+    }
 }
