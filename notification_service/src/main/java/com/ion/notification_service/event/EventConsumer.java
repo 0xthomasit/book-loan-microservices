@@ -1,7 +1,9 @@
 package com.ion.notification_service.event;
 
+import com.ion.common_service.services.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.errors.RetriableException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.DltHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
@@ -14,6 +16,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class EventConsumer {
 
+    @Autowired
+    private EmailService emailService;
+
     @RetryableTopic(
             attempts = "4", // 3 topic retry + 1 topic DLQ
             backoff = @Backoff(delay = 1000, multiplier = 2),
@@ -24,7 +29,7 @@ public class EventConsumer {
 
     @KafkaListener(topics = "test", containerFactory = "kafkaListenerContainerFactory")
     public void listen(String message) {
-        log.info("Received message: " + message);
+        log.info("[test topic]Received message: {}", message);
         // processing message
 
         throw new RuntimeException("Error test");
@@ -32,7 +37,27 @@ public class EventConsumer {
 
     @DltHandler
     void processDltMessage(@Payload String message) {
-        log.info("DLT receive message: " + message);
+        log.info("DLT receive message: {}", message);
+    }
+
+    @KafkaListener(topics = "testEmail", containerFactory = "kafkaListenerContainerFactory")
+    public void testEmail(String message) {
+        log.info("[testEmail topic]Received message: {}", message);
+
+        String template = "<div>\n" +
+                "    <h1>Welcome, %s!</h1>\n" +
+                "    <p>Thank you for joining us. We're excited to have you on board.</p>\n" +
+                "    <p>Your username is: <strong>%s</strong></p>\n" +
+                "</div>";
+        String filledTemplate = String.format(template, "Thomas N.", message);
+
+        emailService.sendEmail(
+                message,
+                "Thanks for buying my course",
+                filledTemplate,
+                true,
+                null
+        );
     }
 
 }
