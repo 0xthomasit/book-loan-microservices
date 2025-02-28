@@ -2,6 +2,7 @@ package com.ion.borrowing_service.command.aggregate;
 
 import com.ion.borrowing_service.command.command.CreateBorrowingCommand;
 import com.ion.borrowing_service.command.event.BorrowingCreatedEvent;
+import lombok.NoArgsConstructor;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -11,6 +12,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.util.Date;
 
+@NoArgsConstructor
 @Aggregate
 public class BorrowingAggregate {
 
@@ -21,9 +23,6 @@ public class BorrowingAggregate {
     private String employeeId;
     private Date borrowingDate;
     private Date returnDate;
-
-    public BorrowingAggregate() {
-    }
 
     @CommandHandler
     public BorrowingAggregate(CreateBorrowingCommand command) {
