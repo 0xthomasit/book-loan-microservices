@@ -36,13 +36,13 @@ public class EmployeeEventHandler {
     }
 
     @EventHandler
-    @DisallowReplay
+    @DisallowReplay // Axon won't automatically replay its Error events when restarting the app
     public void on(EmployeeDeletedEvent event) {
         try {
             employeeRepository.findById(event.getId()).orElseThrow(() -> new Exception("Employee not found"));
             employeeRepository.deleteById(event.getId());
         } catch (Exception ex) {
-            log.error(ex.getMessage());
+            log.error(ex.getMessage()); // Only log, won't throw exception when Employee not found.
         }
     }
 }

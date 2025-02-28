@@ -13,7 +13,7 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 public class CreateBookCommand {
 
     @TargetAggregateIdentifier
-    private String id;
+    private String id; // Tính duy nhất để làm AggregateIdentifier
 
     private String name;
 

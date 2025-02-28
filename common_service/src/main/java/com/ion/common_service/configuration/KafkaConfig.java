@@ -13,11 +13,11 @@ import org.springframework.kafka.core.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@Configuration
+@Configuration // Declare 1 Bean
 public class KafkaConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
-    private String bootstrapServers;
+    private String bootstrapServers; // Address of Broker
 
     @Value("${spring.kafka.consumer.group-id}")
     private String consumerGroupId;
@@ -33,12 +33,13 @@ public class KafkaConfig {
                 StringSerializer.class);
         configProps.put(
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-                StringSerializer.class);
+                StringSerializer.class); // Chuyển đổi thành 1 chuỗi String.
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 
     @Bean
     public KafkaTemplate<String, String> kafkaTemplate() {
+        // KafkaTemplate: 1 class có những method hỗ trợ việc send messages
         return new KafkaTemplate<>(producerFactory());
     }
 
@@ -60,6 +61,7 @@ public class KafkaConfig {
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
+    // Tạo cái listener để lắng nghe các messages
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, String>
     kafkaListenerContainerFactory() {

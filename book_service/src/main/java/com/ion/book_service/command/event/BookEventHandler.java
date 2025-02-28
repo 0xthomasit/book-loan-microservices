@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Component
+@Component // Application can reach to this by scanning
 public class BookEventHandler {
 
     @Autowired
@@ -19,7 +19,7 @@ public class BookEventHandler {
     public void on(BookCreatedEvent event) {
         Book book = new Book();
         BeanUtils.copyProperties(event, book);
-        bookRepository.save(book);
+        bookRepository.save(book); // Help to create book entity, then store it to DB
     }
 
     @EventHandler

@@ -23,7 +23,10 @@ public class BookQueryController {
     @GetMapping
     public List<BookResponseModel> getAllBooks() {
         GetAllBookQuery query = new GetAllBookQuery();
-        return queryGateway.query(query, ResponseTypes.multipleInstancesOf(BookResponseModel.class)).join();
+        return queryGateway.query(
+                query,
+                ResponseTypes.multipleInstancesOf(BookResponseModel.class)
+        ).join();
     }
 
     @PostMapping("/sendMessage")
@@ -34,6 +37,9 @@ public class BookQueryController {
     @GetMapping("{bookId}")
     public BookResponseModel getBookDetail(@PathVariable String bookId) {
         GetBookDetailQuery query = new GetBookDetailQuery(bookId);
-        return queryGateway.query(query, ResponseTypes.instanceOf(BookResponseModel.class)).join();
+        return queryGateway.query(
+                query,
+                ResponseTypes.instanceOf(BookResponseModel.class)
+        ).join();
     }
 }

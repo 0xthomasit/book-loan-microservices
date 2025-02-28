@@ -30,6 +30,7 @@ public class EventConsumer {
             include = {RetriableException.class, RuntimeException.class}
     )
 
+    // containerFactory: re-use ContainerFactory which we already installed
     @KafkaListener(topics = "test", containerFactory = "kafkaListenerContainerFactory")
     public void listen(String message) {
         log.info("[test] Received message: {}", message);

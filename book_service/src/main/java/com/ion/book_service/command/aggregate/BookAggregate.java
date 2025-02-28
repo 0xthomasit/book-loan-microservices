@@ -6,6 +6,8 @@ import com.ion.book_service.command.command.UpdateBookCommand;
 import com.ion.book_service.command.event.BookCreatedEvent;
 import com.ion.book_service.command.event.BookDeletedEvent;
 import com.ion.book_service.command.event.BookUpdatedEvent;
+import jakarta.persistence.Id;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,14 +18,17 @@ import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.springframework.beans.BeanUtils;
 
+// Sau khi dispatch commands, commands sẽ dc gắn vào trong aggregates.
+// Aggregate: xử lý những commands và phát ra events để phản ánh các thay đổi trạng thái của nó
+// Thực thể aggregate: Order aggregate (gồm order details, order các bảng shopping)
 @Aggregate
-@NoArgsConstructor
+@NoArgsConstructor // Must have
 @Getter
 @Setter
 public class BookAggregate {
 
     @AggregateIdentifier
-    private String id;
+    private String id; // Khoá duy nhất của thực thể Book Aggregate, nhằm giúp q.lý các trạng thái thay đổi
     private String name;
     private String author;
     private Boolean isReady;
@@ -33,7 +38,7 @@ public class BookAggregate {
         BookCreatedEvent bookCreatedEvent = new BookCreatedEvent();
         BeanUtils.copyProperties(command, bookCreatedEvent);
 
-        AggregateLifecycle.apply(bookCreatedEvent);
+        AggregateLifecycle.apply(bookCreatedEvent); // Publish an event for Event Handler to process
     }
 
     @CommandHandler
@@ -50,6 +55,7 @@ public class BookAggregate {
         AggregateLifecycle.apply(bookDeletedEvent);
     }
 
+    // Lắng nghe cái Event đã dc publish và thay đổi trạng thái của Aggregate.
     @EventSourcingHandler
     public void on(BookCreatedEvent event) {
         this.id = event.getId();

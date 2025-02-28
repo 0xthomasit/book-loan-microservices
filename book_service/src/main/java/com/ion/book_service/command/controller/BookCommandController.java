@@ -15,13 +15,14 @@ import java.util.UUID;
 @RequestMapping("/api/v1/books")
 public class BookCommandController {
     @Autowired
-    private CommandGateway commandGateway;
+    private CommandGateway commandGateway; // Phát ra Events
 
     @PostMapping
     public String addBook(@Valid @RequestBody BookRequestModel model) {
         CreateBookCommand command = new CreateBookCommand(
                 UUID.randomUUID().toString(),
-                model.getName(), model.getAuthor(),
+                model.getName(),
+                model.getAuthor(),
                 true
         );
         return commandGateway.sendAndWait(command);
