@@ -1,8 +1,8 @@
 package com.ion.book_service.query.controller;
 
-import com.ion.book_service.query.model.BookResponseModel;
 import com.ion.book_service.query.queries.GetAllBookQuery;
-import com.ion.book_service.query.queries.GetBookDetailQuery;
+import com.ion.common_service.model.BookResponseCommonModel;
+import com.ion.common_service.queries.GetBookDetailQuery;
 import com.ion.common_service.services.KafkaService;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
@@ -21,11 +21,11 @@ public class BookQueryController {
     private KafkaService kafkaService;
 
     @GetMapping
-    public List<BookResponseModel> getAllBooks() {
+    public List<BookResponseCommonModel> getAllBooks() {
         GetAllBookQuery query = new GetAllBookQuery();
         return queryGateway.query(
                 query,
-                ResponseTypes.multipleInstancesOf(BookResponseModel.class)
+                ResponseTypes.multipleInstancesOf(BookResponseCommonModel.class)
         ).join();
     }
 
@@ -35,11 +35,11 @@ public class BookQueryController {
     }
 
     @GetMapping("{bookId}")
-    public BookResponseModel getBookDetail(@PathVariable String bookId) {
+    public BookResponseCommonModel getBookDetail(@PathVariable String bookId) {
         GetBookDetailQuery query = new GetBookDetailQuery(bookId);
         return queryGateway.query(
                 query,
-                ResponseTypes.instanceOf(BookResponseModel.class)
+                ResponseTypes.instanceOf(BookResponseCommonModel.class)
         ).join();
     }
 }

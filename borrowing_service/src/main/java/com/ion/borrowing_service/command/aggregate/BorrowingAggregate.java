@@ -16,6 +16,7 @@ import java.util.Date;
 @Aggregate
 public class BorrowingAggregate {
 
+    // Saga: must roll back this Borrowing record if the book is not ready to borrow
     @AggregateIdentifier
     private String id;
 

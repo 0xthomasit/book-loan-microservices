@@ -1,8 +1,8 @@
 package com.ion.employee_service.query.controller;
 
-import com.ion.employee_service.query.model.EmployeeResponseModel;
+import com.ion.common_service.model.EmployeeResponseCommonModel;
+import com.ion.common_service.queries.GetEmployeeDetailQuery;
 import com.ion.employee_service.query.queries.GetAllEmployeeQuery;
-import com.ion.employee_service.query.queries.GetDetailEmployeeQuery;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,9 +37,11 @@ public class EmployeeQueryController {
             }
     )
     @GetMapping
-    public List<EmployeeResponseModel> getAllEmployee(@RequestParam(required = false, defaultValue = "false") Boolean isDisciplined) {
-        return queryGateway
-                .query(new GetAllEmployeeQuery(isDisciplined), ResponseTypes.multipleInstancesOf(EmployeeResponseModel.class)).join();
+    public List<EmployeeResponseCommonModel> getAllEmployee(@RequestParam(required = false, defaultValue = "false") Boolean isDisciplined) {
+        return queryGateway.query(
+                new GetAllEmployeeQuery(isDisciplined),
+                ResponseTypes.multipleInstancesOf(EmployeeResponseCommonModel.class)
+        ).join();
     }
 
     @Operation(
@@ -57,8 +59,11 @@ public class EmployeeQueryController {
             }
     )
     @GetMapping("/{employeeId}")
-    public EmployeeResponseModel getDetailEmployee(@PathVariable String employeeId) {
+    public EmployeeResponseCommonModel getEmployeeDetail(@PathVariable String employeeId) {
         log.info("Calling to getAllEmployee");
-        return queryGateway.query(new GetDetailEmployeeQuery(employeeId), ResponseTypes.instanceOf(EmployeeResponseModel.class)).join();
+        return queryGateway.query(
+                new GetEmployeeDetailQuery(employeeId),
+                ResponseTypes.instanceOf(EmployeeResponseCommonModel.class)
+        ).join();
     }
 }
