@@ -8,7 +8,7 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RollBackStatusBookCommand {
+public class RollBackBookStatusCommand {
 
     @TargetAggregateIdentifier
     private String bookId;
