@@ -8,8 +8,8 @@ import com.ion.book_service.command.event.BookDeletedEvent;
 import com.ion.book_service.command.event.BookUpdatedEvent;
 import com.ion.common_service.command.RollBackBookStatusCommand;
 import com.ion.common_service.command.UpdateBookStatusCommand;
-import com.ion.common_service.event.BookRollBackStatusEvent;
-import com.ion.common_service.event.BookUpdateStatusEvent;
+import com.ion.common_service.event.BookStatusRollBackedEvent;
+import com.ion.common_service.event.BookStatusUpdatedEvent;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -59,26 +59,26 @@ public class BookAggregate {
 
     @CommandHandler
     public void handler(UpdateBookStatusCommand command) {
-        BookUpdateStatusEvent event = new BookUpdateStatusEvent();
+        BookStatusUpdatedEvent event = new BookStatusUpdatedEvent();
         BeanUtils.copyProperties(command, event);
         AggregateLifecycle.apply(event);
     }
 
     @CommandHandler
     public void handler(RollBackBookStatusCommand command) {
-        BookRollBackStatusEvent event = new BookRollBackStatusEvent();
+        BookStatusRollBackedEvent event = new BookStatusRollBackedEvent();
         BeanUtils.copyProperties(command, event);
         AggregateLifecycle.apply(event);
     }
 
     @EventSourcingHandler
-    public void on(BookRollBackStatusEvent event) {
+    public void on(BookStatusRollBackedEvent event) {
         this.id = event.getBookId();
         this.isReady = event.getIsReady();
     }
 
     @EventSourcingHandler
-    public void on(BookUpdateStatusEvent event) {
+    public void on(BookStatusUpdatedEvent event) {
         this.id = event.getBookId();
         this.isReady = event.getIsReady();
     }

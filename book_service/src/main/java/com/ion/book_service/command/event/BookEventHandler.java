@@ -2,8 +2,8 @@ package com.ion.book_service.command.event;
 
 import com.ion.book_service.command.data.Book;
 import com.ion.book_service.command.data.BookRepository;
-import com.ion.common_service.event.BookRollBackStatusEvent;
-import com.ion.common_service.event.BookUpdateStatusEvent;
+import com.ion.common_service.event.BookStatusRollBackedEvent;
+import com.ion.common_service.event.BookStatusUpdatedEvent;
 import org.axonframework.eventhandling.EventHandler;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class BookEventHandler {
     }
 
     @EventHandler
-    public void on(BookUpdateStatusEvent event) {
+    public void on(BookStatusUpdatedEvent event) {
         Optional<Book> oldBook = bookRepository.findById(event.getBookId());
         oldBook.ifPresent(book -> {
             book.setIsReady(event.getIsReady());
@@ -45,7 +45,7 @@ public class BookEventHandler {
     }
 
     @EventHandler
-    public void on(BookRollBackStatusEvent event) {
+    public void on(BookStatusRollBackedEvent event) {
         Optional<Book> oldBook = bookRepository.findById(event.getBookId());
         oldBook.ifPresent(book -> {
             book.setIsReady(event.getIsReady());

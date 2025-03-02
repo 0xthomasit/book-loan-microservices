@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookRollBackStatusEvent {
+public class BookStatusUpdatedEvent {
 
     private String bookId;
     private Boolean isReady;
