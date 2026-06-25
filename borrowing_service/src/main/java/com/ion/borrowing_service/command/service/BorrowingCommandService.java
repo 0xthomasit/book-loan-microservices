@@ -4,10 +4,13 @@ import com.ion.borrowing_service.command.command.CreateBorrowingCommand;
 import com.ion.borrowing_service.command.command.DeleteBorrowingCommand;
 import com.ion.borrowing_service.command.data.Borrowing;
 import com.ion.borrowing_service.command.data.BorrowingRepository;
+import com.ion.borrowing_service.command.event.BorrowingCreatedEvent;
+import com.ion.borrowing_service.command.event.BorrowingDeletedEvent;
 import com.ion.common_service.model.BookResponseCommonModel;
 import com.ion.common_service.model.EmployeeResponseCommonModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -22,6 +25,9 @@ public class BorrowingCommandService {
 
     @Autowired
     private WebClient.Builder webClientBuilder;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     public String createBorrowing(CreateBorrowingCommand command) {
         // Step 1: Fetch book details and check availability
@@ -48,7 +54,6 @@ public class BorrowingCommandService {
             throw new RuntimeException("This employee is disciplined and not allowed to borrow!!");
         }
 
-        // Steps 3 & 4 are wrapped together — if either fails after book status was updated, roll back
         boolean bookStatusUpdated = false;
         try {
             // Step 3: Update book status to not ready (isReady = false)
@@ -68,10 +73,15 @@ public class BorrowingCommandService {
             borrowing.setEmployeeId(command.getEmployeeId());
             borrowing.setBorrowingDate(command.getBorrowingDate());
             borrowingRepository.save(borrowing);
+
+            // Step 5: Publish event after successful save
+            eventPublisher.publishEvent(new BorrowingCreatedEvent(
+                    borrowing.getId(), borrowing.getBookId(),
+                    borrowing.getEmployeeId(), borrowing.getBorrowingDate()));
+
             log.info("Borrowing created successfully for bookId: {}, employeeId: {}", command.getBookId(), command.getEmployeeId());
             return command.getId();
         } catch (Exception ex) {
-            // Rollback book status if it was already updated
             if (bookStatusUpdated) {
                 log.error("Failed after book status update, rolling back. Error: {}", ex.getMessage());
                 webClientBuilder.build()
@@ -88,11 +98,13 @@ public class BorrowingCommandService {
 
     public String deleteBorrowing(DeleteBorrowingCommand command) {
         borrowingRepository.findById(command.getId())
-                .ifPresent(borrowing -> borrowingRepository.delete(borrowing));
+                .ifPresent(borrowing -> {
+                    borrowingRepository.delete(borrowing);
+                    eventPublisher.publishEvent(new BorrowingDeletedEvent(borrowing.getId()));
+                });
         return command.getId();
     }
 
     // Inner record used as request body for book status updates
     public record BookStatusRequest(Boolean isReady, String employeeId, String borrowingId) {}
 }
-

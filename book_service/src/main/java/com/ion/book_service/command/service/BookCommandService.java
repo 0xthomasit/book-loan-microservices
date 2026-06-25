@@ -5,10 +5,14 @@ import com.ion.book_service.command.command.DeleteBookCommand;
 import com.ion.book_service.command.command.UpdateBookCommand;
 import com.ion.book_service.command.data.Book;
 import com.ion.book_service.command.data.BookRepository;
+import com.ion.book_service.command.event.BookCreatedEvent;
+import com.ion.book_service.command.event.BookDeletedEvent;
+import com.ion.book_service.command.event.BookUpdatedEvent;
 import com.ion.common_service.command.RollBackBookStatusCommand;
 import com.ion.common_service.command.UpdateBookStatusCommand;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,10 +23,14 @@ public class BookCommandService {
     @Autowired
     private BookRepository bookRepository;
 
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
     public String createBook(CreateBookCommand command) {
         Book book = new Book();
         BeanUtils.copyProperties(command, book);
         bookRepository.save(book);
+        eventPublisher.publishEvent(new BookCreatedEvent(book.getId(), book.getName(), book.getAuthor(), book.getIsReady()));
         return command.getId();
     }
 
@@ -33,12 +41,16 @@ public class BookCommandService {
         book.setAuthor(command.getAuthor());
         book.setIsReady(command.getIsReady());
         bookRepository.save(book);
+        eventPublisher.publishEvent(new BookUpdatedEvent(book.getId(), book.getName(), book.getAuthor(), book.getIsReady()));
         return command.getId();
     }
 
     public String deleteBook(DeleteBookCommand command) {
         bookRepository.findById(command.getId())
-                .ifPresent(book -> bookRepository.delete(book));
+                .ifPresent(book -> {
+                    bookRepository.delete(book);
+                    eventPublisher.publishEvent(new BookDeletedEvent(book.getId()));
+                });
         return command.getId();
     }
 
@@ -47,6 +59,7 @@ public class BookCommandService {
                 .orElseThrow(() -> new RuntimeException("Book not found with BookId: " + command.getBookId()));
         book.setIsReady(command.getIsReady());
         bookRepository.save(book);
+        eventPublisher.publishEvent(new BookUpdatedEvent(book.getId(), book.getName(), book.getAuthor(), book.getIsReady()));
         return command.getBookId();
     }
 
@@ -55,6 +68,7 @@ public class BookCommandService {
                 .orElseThrow(() -> new RuntimeException("Book not found with BookId: " + command.getBookId()));
         book.setIsReady(command.getIsReady());
         bookRepository.save(book);
+        eventPublisher.publishEvent(new BookUpdatedEvent(book.getId(), book.getName(), book.getAuthor(), book.getIsReady()));
         return command.getBookId();
     }
 }
