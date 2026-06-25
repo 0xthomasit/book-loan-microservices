@@ -1,24 +1,23 @@
-package com.ion.employee_service.query.projection;
+package com.ion.employee_service.query.service;
 
 import com.ion.common_service.model.EmployeeResponseCommonModel;
 import com.ion.common_service.queries.GetEmployeeDetailQuery;
 import com.ion.employee_service.command.data.Employee;
 import com.ion.employee_service.command.data.EmployeeRepository;
 import com.ion.employee_service.query.queries.GetAllEmployeeQuery;
-import org.axonframework.queryhandling.QueryHandler;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
-public class EmployeeProjection {
+@Service
+public class EmployeeQueryService {
+
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    @QueryHandler
-    public List<EmployeeResponseCommonModel> handle(GetAllEmployeeQuery query) {
+    public List<EmployeeResponseCommonModel> getAllEmployees(GetAllEmployeeQuery query) {
         List<Employee> listEmployee = employeeRepository.findAllByIsDisciplined(query.getIsDisciplined());
         return listEmployee.stream().map(employee -> {
             EmployeeResponseCommonModel model = new EmployeeResponseCommonModel();
@@ -27,8 +26,7 @@ public class EmployeeProjection {
         }).toList();
     }
 
-    @QueryHandler
-    public EmployeeResponseCommonModel handle(GetEmployeeDetailQuery query) throws Exception {
+    public EmployeeResponseCommonModel getEmployeeDetail(GetEmployeeDetailQuery query) throws Exception {
         Employee employee = employeeRepository.findById(
                 query.getId()).orElseThrow(() -> new Exception("Employee not found")
         );

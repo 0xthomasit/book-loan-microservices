@@ -3,8 +3,6 @@ package com.ion.borrowing_service.command.command;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.axonframework.modelling.command.TargetAggregateIdentifier;
-
 import java.util.Date;
 
 @Data
@@ -12,7 +10,6 @@ import java.util.Date;
 @NoArgsConstructor
 public class CreateBorrowingCommand {
 
-    @TargetAggregateIdentifier
     private String id;
 
     private String bookId;

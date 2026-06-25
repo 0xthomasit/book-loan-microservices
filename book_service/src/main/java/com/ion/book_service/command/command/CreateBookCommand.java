@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
 @Getter
 @Setter
@@ -12,8 +11,7 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 @NoArgsConstructor
 public class CreateBookCommand {
 
-    @TargetAggregateIdentifier
-    private String id; // Tính duy nhất để làm AggregateIdentifier
+    private String id;
 
     private String name;
 

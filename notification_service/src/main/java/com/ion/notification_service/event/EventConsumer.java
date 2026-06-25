@@ -9,7 +9,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.kafka.retrytopic.DltStrategy;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.retry.annotation.Backoff;
+import org.springframework.kafka.annotation.BackOff;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -24,7 +24,7 @@ public class EventConsumer {
 
     @RetryableTopic(
             attempts = "4", // 3 topic retry + 1 topic DLQ
-            backoff = @Backoff(delay = 1000, multiplier = 2),
+            backOff = @BackOff(delay = 1000, multiplier = 2),
             autoCreateTopics = "true",
             dltStrategy = DltStrategy.FAIL_ON_ERROR,
             include = {RetriableException.class, RuntimeException.class}

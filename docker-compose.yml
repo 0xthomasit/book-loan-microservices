@@ -3,7 +3,7 @@ services:
         build:
             context: .
             dockerfile: discovery_server/Dockerfile
-#        image: "${DOCKER_USERNAME}/discovery_server:latest"
+        # image: "${DOCKER_USERNAME}/discovery_server:latest"
         ports:
             - "8761:8761"
         networks:
@@ -18,9 +18,6 @@ services:
             - microservice-networks
         depends_on:
             - discovery-server
-            - axonserver
-        environment:
-            - "AXONIQ_AXONSERVER_SERVERS=axonserver:8024"
     api-gateway:
         build:
             context: .
@@ -43,22 +40,9 @@ services:
         depends_on:
             - zookeeper
             - broker
-            - axonserver
+            - discovery-server
         environment:
             - "KAFKA_BOOTSTRAP_SERVERS=broker:9092"
-            - "AXONIQ_AXONSERVER_SERVERS=axonserver:8024"
-    axonserver:
-        image: "axoniq/axonserver:2024.2.3"
-        hostname: axonserver
-        container_name: axonserver
-        environment:
-            - "AXONIQ_AXONSERVER_STANDALONE=TRUE"
-        ports:
-            - "8024:8024"
-            - "8124:8124"
-            - "8224:8224"
-        networks:
-            - microservice-networks
     redis:
         image: redis:7.4.2
         restart: always

@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.HashMap;
 import java.util.Map;
 
+// Trong 'Advice': chứa các controller Advice để xử lý ngoại lệ
 @ControllerAdvice
 public class ExceptionAdvice {
 
+    // Lắng nghe + bắt exception tại thời điểm mỗi Exception được ném ra
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST) // API getting failed at step for validating 'Request Body'
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {

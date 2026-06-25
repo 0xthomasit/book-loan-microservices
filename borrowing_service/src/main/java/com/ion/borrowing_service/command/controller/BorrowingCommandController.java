@@ -2,7 +2,7 @@ package com.ion.borrowing_service.command.controller;
 
 import com.ion.borrowing_service.command.command.CreateBorrowingCommand;
 import com.ion.borrowing_service.command.model.BorrowingCreateModel;
-import org.axonframework.commandhandling.gateway.CommandGateway;
+import com.ion.borrowing_service.command.service.BorrowingCommandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,8 +17,7 @@ import java.util.UUID;
 public class BorrowingCommandController {
 
     @Autowired
-    private CommandGateway commandGateway;
-
+    private BorrowingCommandService borrowingCommandService;
     @PostMapping
     public String createBorrowing(@RequestBody BorrowingCreateModel model) {
         CreateBorrowingCommand command = new CreateBorrowingCommand(
@@ -27,8 +26,6 @@ public class BorrowingCommandController {
                 model.getEmployeeId(),
                 new Date()
         );
-
-        return commandGateway.sendAndWait(command);
+        return borrowingCommandService.createBorrowing(command);
     }
-
 }

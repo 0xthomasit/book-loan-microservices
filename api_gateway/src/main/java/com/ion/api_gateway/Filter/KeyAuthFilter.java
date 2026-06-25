@@ -24,10 +24,10 @@ public class KeyAuthFilter extends AbstractGatewayFilterFactory<KeyAuthFilter.Co
     @Override
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
-            if (!exchange.getRequest().getHeaders().containsKey("apiKey")) {
+            if (!exchange.getRequest().getHeaders().containsHeader("apiKey")) {
                 return handleException(exchange, "Missing authorization information", HttpStatus.UNAUTHORIZED);
             }
-            String key = exchange.getRequest().getHeaders().get("apiKey").get(0);
+            String key = exchange.getRequest().getHeaders().getFirst("apiKey");
             if (!key.equals(apiKey)) {
                 return handleException(exchange, "Invalid Api Key", HttpStatus.FORBIDDEN);
             }
