@@ -4,6 +4,8 @@ import com.ion.borrowing_service.command.command.CreateBorrowingCommand;
 import com.ion.borrowing_service.command.command.DeleteBorrowingCommand;
 import com.ion.borrowing_service.command.data.Borrowing;
 import com.ion.borrowing_service.command.data.BorrowingRepository;
+import com.ion.common_service.command.RollBackBookStatusCommand;
+import com.ion.common_service.command.UpdateBookStatusCommand;
 import com.ion.common_service.model.BookResponseCommonModel;
 import com.ion.common_service.model.EmployeeResponseCommonModel;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +34,7 @@ public class BorrowingCommandService {
                 .bodyToMono(BookResponseCommonModel.class)
                 .block();
 
-        if (book == null || !book.getIsReady()) {
+        if (book == null || !Boolean.TRUE.equals(book.getIsReady())) {
             throw new RuntimeException("This book has been borrowed by someone!!");
         }
 
@@ -44,7 +46,7 @@ public class BorrowingCommandService {
                 .bodyToMono(EmployeeResponseCommonModel.class)
                 .block();
 
-        if (employee == null || employee.getIsDisciplined()) {
+        if (employee == null || Boolean.TRUE.equals(employee.getIsDisciplined())) {
             throw new RuntimeException("This employee is disciplined and not allowed to borrow!!");
         }
 
@@ -52,13 +54,15 @@ public class BorrowingCommandService {
         boolean bookStatusUpdated = false;
         try {
             // Step 3: Update book status to not ready (isReady = false)
-            webClientBuilder.build()
-                    .put()
+            UpdateBookStatusCommand updateCommand = new UpdateBookStatusCommand(
+                    command.getBookId(), false, command.getEmployeeId(), command.getId());
+                webClientBuilder.build()
+                        .put()
                     .uri("http://book-service/api/internal/books/" + command.getBookId() + "/status")
-                    .bodyValue(new BookStatusRequest(false, command.getEmployeeId(), command.getId()))
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
+                    .bodyValue(updateCommand)
+                        .retrieve()
+                        .bodyToMono(String.class)
+                        .block();
             bookStatusUpdated = true;
 
             // Step 4: Save borrowing record
@@ -74,10 +78,12 @@ public class BorrowingCommandService {
             // Rollback book status if it was already updated
             if (bookStatusUpdated) {
                 log.error("Failed after book status update, rolling back. Error: {}", ex.getMessage());
+                RollBackBookStatusCommand rollbackCommand = new RollBackBookStatusCommand(
+                        command.getBookId(), true, command.getEmployeeId(), command.getId());
                 webClientBuilder.build()
                         .put()
                         .uri("http://book-service/api/internal/books/" + command.getBookId() + "/status/rollback")
-                        .bodyValue(new BookStatusRequest(true, command.getEmployeeId(), command.getId()))
+                        .bodyValue(rollbackCommand)
                         .retrieve()
                         .bodyToMono(String.class)
                         .block();
@@ -91,8 +97,4 @@ public class BorrowingCommandService {
                 .ifPresent(borrowing -> borrowingRepository.delete(borrowing));
         return command.getId();
     }
-
-    // Inner record used as request body for book status updates
-    public record BookStatusRequest(Boolean isReady, String employeeId, String borrowingId) {}
 }
-
