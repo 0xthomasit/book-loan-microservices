@@ -21,6 +21,7 @@ public class EmployeeCommandController {
 
     @Autowired
     private EmployeeCommandService employeeCommandService;
+
     @PostMapping
     public String addEmployee(@Valid @RequestBody CreateEmployeeModel model) throws Exception {
         CreateEmployeeCommand command = new CreateEmployeeCommand(

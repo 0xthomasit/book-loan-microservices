@@ -32,7 +32,7 @@ public class EmployeeCommandService {
         employeeRepository.save(employee);
         eventPublisher.publishEvent(new EmployeeCreatedEvent(
                 employee.getId(), employee.getFirstName(), employee.getLastName(),
-                employee.getLastName(), employee.getKin(), employee.getKin(), employee.getIsDisciplined()));
+                employee.getKin(), employee.getIsDisciplined()));
         return command.getId();
     }
 
